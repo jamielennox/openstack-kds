@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
 
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -12,8 +12,19 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import pbr.version
+import pecan
+
+from kds.api.controllers import v1
 
 
-__version__ = pbr.version.VersionInfo(
-    'kds').version_string()
+class RootController(object):
+
+    v1 = v1.Controller()
+
+    @pecan.expose('json')
+    def index(self):
+        return {
+            'versions': {
+                'values': [self.v1.VERSION_INFO]
+            }
+        }

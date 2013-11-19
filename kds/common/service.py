@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
 
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -12,8 +12,15 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import pbr.version
+from oslo.config import cfg
+
+from kds.openstack.common import log
 
 
-__version__ = pbr.version.VersionInfo(
-    'kds').version_string()
+def prepare_service(argv=[]):
+    cfg.set_defaults(log.log_opts,
+                     default_log_levels=['sqlalchemy=WARN',
+                                         'eventlet.wsgi.server=WARN'
+                                         ])
+    cfg.CONF(argv[1:], project='kds')
+    log.setup('kds')

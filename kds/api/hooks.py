@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
 
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -12,8 +12,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import pbr.version
+from oslo.config import cfg
+from pecan import hooks
 
 
-__version__ = pbr.version.VersionInfo(
-    'kds').version_string()
+class ConfigHook(hooks.PecanHook):
+    """Attach the configuration object to the request
+    so controllers can get to it.
+    """
+
+    def before(self, state):
+        state.request.cfg = cfg.CONF
