@@ -49,3 +49,6 @@ ChangeLog
 # Editors
 *~
 .*.swp
+
+# Databases
+*.sqlite

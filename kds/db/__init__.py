@@ -11,17 +11,3 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations
 # under the License.
-
-from oslo.config import cfg
-
-from kds.openstack.common.db import api as db_api
-from kds.openstack.common import log
-
-
-def prepare_service(argv=[]):
-    cfg.set_defaults(log.log_opts,
-                     default_log_levels=['sqlalchemy=WARN',
-                                         'eventlet.wsgi.server=WARN'
-                                         ])
-    cfg.CONF(argv[1:], project='kds')
-    log.setup('kds')

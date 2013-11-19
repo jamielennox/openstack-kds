@@ -12,16 +12,12 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from oslo.config import cfg
+import os
 
-from kds.openstack.common.db import api as db_api
-from kds.openstack.common import log
+from kds.openstack.common.db.sqlalchemy import migration
 
 
-def prepare_service(argv=[]):
-    cfg.set_defaults(log.log_opts,
-                     default_log_levels=['sqlalchemy=WARN',
-                                         'eventlet.wsgi.server=WARN'
-                                         ])
-    cfg.CONF(argv[1:], project='kds')
-    log.setup('kds')
+def db_sync(version=None):
+    abs_path = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                            'migrate_repo')
+    migration.db_sync(abs_path, version)
