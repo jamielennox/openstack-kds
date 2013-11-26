@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
 
-# Copyright 2010-2011 OpenStack Foundation
-# Copyright (c) 2013 Hewlett-Packard Development Company, L.P.
-#
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
 # a copy of the License at
@@ -17,37 +14,26 @@
 
 import os
 
-import fixtures
-import testtools
+from oslo.config import cfg
 
-_TRUE_VALUES = ('true', '1', 'yes')
+from kds.openstack.common import test
+from kds.tests import fixture
+
+TEST_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+ROOT_DIR = os.path.normpath(os.path.join(TEST_DIR, '..', '..'))
+
+CONF = cfg.CONF
 
 
-class TestCase(testtools.TestCase):
-
-    """Test case base class for all unit tests."""
+class BaseTestCase(test.BaseTestCase):
 
     def setUp(self):
-        """Run before each test method to initialize test environment."""
+        super(BaseTestCase, self).setUp()
+        self.useFixture(fixture.Conf(CONF))
 
-        super(TestCase, self).setUp()
-        test_timeout = os.environ.get('OS_TEST_TIMEOUT', 0)
-        try:
-            test_timeout = int(test_timeout)
-        except ValueError:
-            # If timeout value is invalid do not set a timeout.
-            test_timeout = 0
-        if test_timeout > 0:
-            self.useFixture(fixtures.Timeout(test_timeout, gentle=True))
+    # can't use the word tests here
+    def tst_path(self, *args):
+        return os.path.join(TEST_DIR, *args)
 
-        self.useFixture(fixtures.NestedTempfile())
-        self.useFixture(fixtures.TempHomeDir())
-
-        if os.environ.get('OS_STDOUT_CAPTURE') in _TRUE_VALUES:
-            stdout = self.useFixture(fixtures.StringStream('stdout')).stream
-            self.useFixture(fixtures.MonkeyPatch('sys.stdout', stdout))
-        if os.environ.get('OS_STDERR_CAPTURE') in _TRUE_VALUES:
-            stderr = self.useFixture(fixtures.StringStream('stderr')).stream
-            self.useFixture(fixtures.MonkeyPatch('sys.stderr', stderr))
-
-        self.log_fixture = self.useFixture(fixtures.FakeLogger())
+    def root_path(self, *args):
+        return os.path.join(ROOT_DIR, *args)

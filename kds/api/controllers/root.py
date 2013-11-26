@@ -23,6 +23,7 @@ class RootController(object):
 
     @pecan.expose('json')
     def index(self):
+        pecan.response.status = 300
         return {
             'versions': {
                 'values': [self.v1.VERSION_INFO]

@@ -15,6 +15,9 @@
 from oslo.config import cfg
 from pecan import hooks
 
+from kds.api.controllers.v1 import crypto
+from kds.db import manager as storage_manager
+
 
 class ConfigHook(hooks.PecanHook):
     """Attach the configuration object to the request
@@ -23,3 +26,16 @@ class ConfigHook(hooks.PecanHook):
 
     def before(self, state):
         state.request.cfg = cfg.CONF
+
+
+class StorageHook(hooks.PecanHook):
+
+    def before(self, state):
+        state.request.storage_manager = \
+            storage_manager.StorageManager.get_instance()
+
+
+class CryptoHook(hooks.PecanHook):
+
+    def before(self, state):
+        state.request.crypto_manager = crypto.get_crypto_manager()

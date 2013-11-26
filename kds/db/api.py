@@ -12,13 +12,55 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from kds.openstack.common.confif import cfg
+import abc
+
+from oslo.config import cfg
+import six
+
 from kds.openstack.common.db import api as db_api
-from kds.openstack.common import logging
+from kds.openstack.common import log
 
 CONF = cfg.CONF
 
 _BACKEND_MAPPING = {'sqlalchemy': 'kds.db.sqlalchemy.api'}
 
 IMPL = db_api.DBAPI(backend_mapping=_BACKEND_MAPPING)
-LOG = logging.getLogger(__name__)
+LOG = log.getLogger(__name__)
+
+
+def get_instance():
+    """Return a DB API instance."""
+    return IMPL
+
+
+@six.add_metaclass(abc.ABCMeta)
+class Connection(object):
+
+    @abc.abstractmethod
+    def set_shared_keys(self, kds_id, sig, enc):
+        """Set key related to kds_id."""
+
+    @abc.abstractmethod
+    def get_shared_keys(self, kds_id):
+        """Get key related to kds_id.
+
+        :param string: Key Identifier
+        :returns tuple(string, string): signature key, encryption key
+        :raises: keystone.exception.ServiceNotFound
+        """
+
+    @abc.abstractmethod
+    def set_group_key(self, group_name, key, expiration):
+        pass
+
+    @abc.abstractmethod
+    def get_group_key(self, group_name):
+        pass
+
+    @abc.abstractmethod
+    def create_group(self, group_name):
+        pass
+
+    @abc.abstractmethod
+    def delete_group(self, group_name):
+        pass

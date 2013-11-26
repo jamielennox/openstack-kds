@@ -14,7 +14,7 @@
 
 from oslo.config import cfg
 
-from kds.openstack.common.db import api as db_api
+from kds.common import config
 from kds.openstack.common import log
 
 
@@ -23,5 +23,5 @@ def prepare_service(argv=[]):
                      default_log_levels=['sqlalchemy=WARN',
                                          'eventlet.wsgi.server=WARN'
                                          ])
-    cfg.CONF(argv[1:], project='kds')
+    config.parse_args(argv)
     log.setup('kds')

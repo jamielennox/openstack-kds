@@ -12,48 +12,40 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from oslo.config import cfg
 import pecan
 
+from kds.api import config as pecan_config
 from kds.api import hooks
-from kds.api import config
+from kds.common import config as oslo_config
 
-CONF = cfg.CONF
-
-API_SERVICE_OPTS = [
-    cfg.StrOpt('bind_ip',
-               default='0.0.0.0',
-               help='IP for the server to bind to'),
-    cfg.IntOpt('port',
-               default=6385,
-               help='The port for the server'),
-    ]
-CONF.register_opts(API_SERVICE_OPTS)
+CONF = oslo_config.CONF
 
 
 def get_pecan_config():
     # Set up the pecan configuration
-    filename = config.__file__.replace('.pyc', '.py')
+    filename = pecan_config.__file__.replace('.pyc', '.py')
     return pecan.configuration.conf_from_file(filename)
 
 
-def setup_app(pecan_config=None, extra_hooks=None):
-    app_hooks = [hooks.ConfigHook()]
+def setup_app(config=None, extra_hooks=None):
+    app_hooks = [hooks.ConfigHook(),
+                 hooks.StorageHook(),
+                 hooks.CryptoManager()]
 
     if extra_hooks:
         app_hooks.extend(extra_hooks)
 
-    if not pecan_config:
-        pecan_config = get_pecan_config()
+    if not config:
+        config = get_pecan_config()
 
-    pecan.configuration.set_config(dict(pecan_config), overwrite=True)
+    pecan.configuration.set_config(dict(config), overwrite=True)
 
     app = pecan.make_app(
-        pecan_config.app.root,
-        static_root=pecan_config.app.static_root,
-        template_path=pecan_config.app.template_path,
+        config.app.root,
+        static_root=config.app.static_root,
+        template_path=config.app.template_path,
         debug=CONF.debug,
-        force_canonical=getattr(pecan_config.app, 'force_canonical', True),
+        force_canonical=getattr(config.app, 'force_canonical', True),
         hooks=app_hooks,
     )
 
@@ -63,7 +55,7 @@ def setup_app(pecan_config=None, extra_hooks=None):
 class VersionSelectorApplication(object):
     def __init__(self):
         pc = get_pecan_config()
-        self.v1 = setup_app(pecan_config=pc)
+        self.v1 = setup_app(config=pc)
 
     def __call__(self, environ, start_response):
         return self.v1(environ, start_response)

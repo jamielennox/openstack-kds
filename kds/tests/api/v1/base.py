@@ -12,23 +12,20 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import pecan
-
-from kds.api.controllers.v1 import key as key_controller
+from kds.tests.api import base
 
 
-class Controller(object):
-    """Version 1 API controller root."""
+def v1_url(*args):
+    return base.urljoin('v1', *args)
 
-    VERSION_INFO = {'status': 'stable',
-                    'media-types': [{'base': 'application/json'}],
-                    'id': 'v1.0',
-                    'links': [{
-                        'href': '/v1/',
-                        'rel': 'self'}]}
 
-    key = key_controller.KeyController()
+class BaseTestCase(base.BaseTestCase):
 
-    @pecan.expose('json')
-    def index(self):
-        return {'version': self.VERSION_INFO}
+    def get(self, url, *args, **kwargs):
+        return super(BaseTestCase, self).get(v1_url(url), *args, **kwargs)
+
+    def post(self, url, *args, **kwargs):
+        return super(BaseTestCase, self).post(v1_url(url), *args, **kwargs)
+
+    def put(self, url, *args, **kwargs):
+        return super(BaseTestCase, self).put(v1_url(url), *args, **kwargs)

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# vim: tabstop=4 shiftwidth=4 softtabstop=4
 
 # Licensed under the Apache License, Version 2.0 (the "License"); you may
 # not use this file except in compliance with the License. You may obtain
@@ -12,17 +12,9 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-"""
-test_kds
-----------------------------------
+from kds.api.controllers.v1.types import b64
 
-Tests for `kds` module.
-"""
+base64 = b64.Base64Type()
+base64json = b64.Base64JsonType()
 
-from kds.tests import base
-
-
-class TestKds(base.TestCase):
-
-    def test_something(self):
-        pass
+__all__ = [base64, base64json]
